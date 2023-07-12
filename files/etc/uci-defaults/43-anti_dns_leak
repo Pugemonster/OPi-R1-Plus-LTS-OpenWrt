@@ -1,0 +1,14 @@
+#!/bin/sh
+[ "$(uci -q get firewall.@redirect[-1].name)" = "dnsproxy-dns-leaks" ] && exit 0
+
+uci -q batch <<-EOF >/dev/null
+    add firewall redirect
+    set firewall.@redirect[-1].src="lan"
+    set firewall.@redirect[-1].src_dport="53"
+    set firewall.@redirect[-1].target="DNAT"
+    set firewall.@redirect[-1].dest_ip="`uci get network.lan.ipaddr|sed 's-/.*$--'`"
+    set firewall.@redirect[-1].name="dnsproxy-dns-leaks"
+    commit firewall
+EOF
+
+exit 0
