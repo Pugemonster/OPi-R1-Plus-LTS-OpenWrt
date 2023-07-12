@@ -1,0 +1,10 @@
+#!/bin/sh
+[ "$(uci -q get network.lan.ipaddr)" = "192.168.0.1" ] && exit 0
+
+uci -q batch <<-EOF >/dev/null
+	set network.lan.ipaddr="192.168.0.1"
+    set network.lan.dns='1.1.1.1' '1.0.0.1' '8.8.8.8' '8.8.4.4'
+	commit system
+EOF
+
+exit 0
