@@ -1,0 +1,21 @@
+if [ "$(uci -q get network.wan.peerdns)" = "0" ] && [ "$(uci -q get network.wan6.peerdns)" = "0" ] && [ "$(uci -q get network.PPPoE.peerdns)" = "0" ] ; then
+    exit 0
+
+elif [ "$(uci -q get network.wan.peerdns)" != "0" ] || [ "$(uci -q get network.wan6.peerdns)" != "0" ]; then
+    uci -q batch <<-EOF >/dev/null
+        uci set network.wan.peerdns="0"
+        uci set network.wan6.peerdns="0"
+        uci commit network
+EOF
+    exit 1
+
+elif [ "$(uci -q get network.PPPoE.peerdns)" != "0" ]; then
+    uci -q batch <<-EOF >/dev/null
+        uci set network.wan.peerdns="0"
+        uci set network.wan6.peerdns="0"
+        uci set network.PPPoE.peerdns="0"
+        uci commit network
+EOF
+
+    exit 0
+fi

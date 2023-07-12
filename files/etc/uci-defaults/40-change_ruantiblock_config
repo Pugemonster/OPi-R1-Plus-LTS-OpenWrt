@@ -1,0 +1,9 @@
+#!/bin/sh
+[ "$(uci -q get ruantiblock.config.proxy_mode)" = "2" ] && exit 0
+
+uci -q batch <<-EOF >/dev/null
+	uci set ruantiblock.config.proxy_mode="2"
+	commit ruantiblock
+EOF
+
+exit 0

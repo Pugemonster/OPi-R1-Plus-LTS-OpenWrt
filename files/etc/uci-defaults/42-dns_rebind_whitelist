@@ -1,0 +1,17 @@
+urls=("tp.internet.beeline.ru")
+
+missing_urls=()
+for url in "${urls[@]}"; do
+    if ! uci -q get dhcp.@dnsmasq[0].rebind_domain | grep -q "$url"; then
+        missing_urls+=("$url")
+    fi
+done
+
+if [ "${#missing_urls[@]}" -eq 0 ]; then
+    exit 0
+else
+    uci batch <<-EOF >/dev/null
+        set dhcp.@dnsmasq[0].rebind_domain="$(uci -q get dhcp.@dnsmasq[0].rebind_domain) ${missing_urls[*]}"
+        commit dhcp
+EOF
+fi
